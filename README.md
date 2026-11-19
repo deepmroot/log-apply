@@ -21,7 +21,7 @@ Then just ask: `/apply https://job-boards.greenhouse.io/acme/jobs/1234567`, or `
 
 | Step | How |
 |---|---|
-| Find | Postings you give it, company career boards (Greenhouse, Workday) and curated internship lists. It never automates LinkedIn. |
+| Find | Postings you give it, or [treg](https://treg.to): every open job on a company's own board (Greenhouse, Ashby, Lever and more), cross-company search, and a check that drops postings already taken down. It never automates LinkedIn. |
 | Tailor | Claude writes a summary and cover letter for the job, only from facts in your `profile.yaml` |
 | Documents | `docs/render.py`: real `pdflatex`, one page, clickable links, and a refusal when the result isn't exactly one page |
 | Fill | Workday (sign in or account, every wizard page, screening questions, self-ID, Review) and Greenhouse (form, files, custom questions, security code from mail) |
@@ -59,6 +59,16 @@ When a form asks something no rule covers, `apply` stops with `needsAnswers` and
 - `pdflatex` (MiKTeX, MacTeX or TeX Live)
 - Chrome, Edge or Brave (or Aside)
 - For the chrome driver's verification emails: `LOG_APPLY_IMAP_USER` and `LOG_APPLY_IMAP_PASS`, a Gmail app password
+
+## Built with
+
+- **[Claude Code](https://claude.com/claude-code)**: the agent that runs it all, as a plugin.
+- **[treg](https://treg.to)**: finds the jobs. One key for company job boards and job search, and it drops closed postings.
+- **[Aside](https://aside.com)**: a browser it can drive in your signed-in profile, with Gmail built in.
+- **[AutoInternship](https://github.com/pqthangv/AutoInternshipClaude)**: the form-filling and screening approach it grew from (and its Canada and co-op fork).
+- **[Jake's Resume](https://github.com/jakegut/resume)**: the LaTeX resume template the documents are based on (MIT).
+- **[Playwright](https://playwright.dev)**: drives Chrome, Edge and Brave.
+- **[log](https://github.com/matthewdonsemail-lab/log)** by [ListeningKit](https://log.listeningkit.com): the agent stack it's part of.
 
 ## Care
 

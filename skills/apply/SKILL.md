@@ -10,9 +10,16 @@ The CLI is `node ${CLAUDE_PLUGIN_ROOT}/bin/log-apply.mjs` (below: `log-apply`). 
 ## The loop, per posting
 
 1. **Find.** Use the URL the user gave, or search for open postings that match their profile:
+   - **treg** (https://treg.to, if the user has it set up: `treg call <endpoint>`):
+     - `treg.companies.jobs`, free: one company's open jobs, straight from its own board (Greenhouse, Ashby, Lever, SmartRecruiters and more).
+     - `hirebase.jobs.search`: search across companies. Check the size first with `hirebase.jobs.search.count`, which is free.
+     - `hirebase.jobs.expired`, free: drop postings that were taken down before writing anything.
+
+     Paid treg calls spend the user's balance, so ask before the first one in a session.
    - company career boards: Greenhouse boards and Workday career sites
    - curated internship lists such as SimplifyJobs on GitHub
    - job-alert emails the user forwards
+
    Never automate LinkedIn or any site's search in the user's logged-in browser. Skip a posting already in `applications.json` under the same company and role.
 2. **Screen.** Read the whole posting. Skip it, and say why, when:
    - it is senior or full-time, but the user wants internships
