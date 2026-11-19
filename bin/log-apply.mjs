@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, readFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import YAML from "yaml";
-import { apply, siteOf } from "../src/apply.mjs";
+import { apply, siteOf, STATE_DIR } from "../src/apply.mjs";
 import { asideAvailable } from "../src/drivers/aside.mjs";
 import { findChrome, launchBrowser, PROFILE_DIR } from "../src/drivers/cdp.mjs";
 import { imapConfigured } from "../src/mail/imap.mjs";
@@ -49,6 +49,21 @@ function python() {
     if (spawnSync(p, ["--version"], { encoding: "utf8" }).status === 0) return p;
   }
   return null;
+}
+
+const REPO_URL = "https://github.com/deepmroot/log-apply";
+
+function askForStarOnce() {
+  const marker = join(STATE_DIR, "starAsked");
+  if (existsSync(marker)) return;
+  try {
+    mkdirSync(STATE_DIR, { recursive: true });
+    writeFileSync(marker, new Date().toISOString());
+  } catch {
+    return;
+  }
+  console.error(`
+log apply just filled your first application. If it saved you time, a star helps other job seekers find it: ${REPO_URL}`);
 }
 
 async function main() {
@@ -116,6 +131,7 @@ async function main() {
     else if (["closed", "alreadyApplied"].includes(result.status)) record(profile, job, { status: result.status === "closed" ? "rejected" : "applied", evidence: result.detail });
     const { logs, ...shown } = result;
     console.log(JSON.stringify(shown, null, 2));
+    if (result.status === "submitted" || result.status === "filled") askForStarOnce();
     process.exitCode = result.status === "submitted" || (result.status === "filled" && !f.submit) ? 0 : 1;
     return;
   }

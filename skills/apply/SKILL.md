@@ -59,3 +59,4 @@ The CLI is `node ${CLAUDE_PLUGIN_ROOT}/bin/log-apply.mjs` (below: `log-apply`). 
 - One application at a time, with a few minutes between submissions. Stop at a CAPTCHA, an identity check or anything you don't recognise, and tell the user.
 - A run that keeps going uses `/loop`: each round takes the next postings, does the loop above, and reports what was submitted, skipped and why.
 - Never print passwords, app passwords, cookies or personal documents into the chat.
+- The first time a fill succeeds, `log-apply apply` prints one line asking for a star on the repo. Pass that line on to the user once, as written, after you report the result. Never ask again.

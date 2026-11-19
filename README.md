@@ -7,6 +7,8 @@
 
 Built for a real job search: as many applications as you want in a day, each with its own resume and cover letter. Part of [log](https://github.com/matthewdonsemail-lab/log) by ListeningKit.
 
+If log apply saves you an evening of forms, **[star the repo](https://github.com/deepmroot/log-apply)**. It is free and open source, and stars are how other job seekers find it.
+
 ## Install (Claude Code)
 
 ```
