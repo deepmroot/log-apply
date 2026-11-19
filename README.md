@@ -62,13 +62,13 @@ When a form asks something no rule covers, `apply` stops with `needsAnswers` and
 
 ## Built with
 
-- **[Claude Code](https://claude.com/claude-code)**: the agent that runs it all, as a plugin.
 - **[treg](https://treg.to)**: finds the jobs. One key for company job boards and job search, and it drops closed postings.
 - **[Aside](https://aside.com)**: a browser it can drive in your signed-in profile, with Gmail built in.
-- **[AutoInternship](https://github.com/pqthangv/AutoInternshipClaude)**: the form-filling and screening approach it grew from (and its Canada and co-op fork).
-- **[Jake's Resume](https://github.com/jakegut/resume)**: the LaTeX resume template the documents are based on (MIT).
-- **[Playwright](https://playwright.dev)**: drives Chrome, Edge and Brave.
+- **[Claude Code](https://claude.com/claude-code)**: the agent that runs it all, as a plugin.
+- **[AutoInternship](https://github.com/pqthangv/AutoInternshipClaude)**: the form-filling and screening approach it grew from.
 - **[log](https://github.com/matthewdonsemail-lab/log)** by [ListeningKit](https://log.listeningkit.com): the agent stack it's part of.
+
+The resume layout is based on [Jake's Resume](https://github.com/jakegut/resume) (MIT).
 
 ## Care
 
