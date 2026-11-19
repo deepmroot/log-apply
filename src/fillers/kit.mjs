@@ -21,6 +21,21 @@ export function firstMatch(options, patterns) {
   return null;
 }
 
+export function pickOption(options, patterns, avoid) {
+  const bad = (o) => (avoid || []).some((src) => {
+    try {
+      return new RegExp(src, "i").test(o);
+    } catch (e) {
+      return false;
+    }
+  });
+  const allowed = options.filter((o) => !bad(o));
+  const hit = firstMatch(allowed, patterns);
+  if (hit) return hit;
+  if (allowed.length < options.length) return allowed.find((o) => /(^|[^a-z])non-|(^|[^a-z])not an? (canadian |us |u[.]s[.] )?(citizen|permanent)/i.test(o)) || null;
+  return null;
+}
+
 export function wantsCheck(checks, text) {
   return checks.some((src) => {
     try {

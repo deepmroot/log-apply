@@ -69,6 +69,7 @@ export function contextFor(profile, job, url, opts) {
     source: { typed: profile.work.howDidYouHearTyped || "University", patterns: [profile.work.howDidYouHear || "Job Posting", "Job Posting|Universit|College|Campus|School|Career|Job Board|Other"] },
     filePrefix: profile.documents.filePrefix,
     termMonths: profile.work.termMonths || [4, 8, 12],
+    avoid: (profile.work.citizenship || []).some((x) => new RegExp("^" + c.country + "$", "i").test(x)) ? [] : ["^(?!.*(non-|not an? |isn.t|without)).*(citizen|permanent resident)"],
     fileNames: Object.fromEntries(Object.entries(files).map(([k, p]) => [k, p ? basename(p) : null])),
   };
   if (site === "workday") {

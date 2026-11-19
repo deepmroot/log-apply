@@ -57,3 +57,12 @@ test("the first rule that matches a question wins, and options match in order", 
   assert.equal(firstMatch(["A", "B"], ["[unclosed", "^B"]), "B");
   assert.ok(wantsCheck(["terms and conditions"], "Consent :: I accept the terms and conditions"));
 });
+
+test("a non-citizen is never answered as a citizen or permanent resident", async () => {
+  const { pickOption } = await import("../src/fillers/kit.mjs");
+  const avoid = ["^(?!.*(non-|not an? |isn.t|without)).*(citizen|permanent resident)"];
+  const opts = ["Select One", "Yes: Canadian Citizen/Lawful Permanent Resident.", "No: Non-Canadian Citizen/Non-Canadian Permanent Resident."];
+  assert.equal(pickOption(opts, ["^Yes"], avoid), "No: Non-Canadian Citizen/Non-Canadian Permanent Resident.");
+  assert.equal(pickOption(["Yes", "No"], ["^Yes"], avoid), "Yes");
+  assert.equal(pickOption(opts, ["^Yes"], []), "Yes: Canadian Citizen/Lawful Permanent Resident.");
+});

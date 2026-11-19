@@ -1,4 +1,4 @@
-import { clickOptionText, fillText, firstMatch, ruleFor, visibleOptions, wantsCheck } from "./kit.mjs";
+import { clickOptionText, fillText, firstMatch, pickOption, ruleFor, visibleOptions, wantsCheck } from "./kit.mjs";
 
 export async function greenhouse(page, ctx, H, state) {
   const R = ctx.rules;
@@ -23,7 +23,7 @@ export async function greenhouse(page, ctx, H, state) {
   };
   const choose = async (id, typed, patterns, wait) => {
     const os = await openOptions(id, typed, wait);
-    const pick = firstMatch(os, patterns);
+    const pick = pickOption(os, patterns, ctx.avoid);
     if (!pick) {
       await page.keyboard.press("Escape").catch(() => {});
       return { miss: true, options: os.slice(0, 12) };

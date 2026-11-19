@@ -1,4 +1,4 @@
-import { clickOptionText, fillText, firstMatch, ruleFor, visibleOptions, wantsCheck } from "./kit.mjs";
+import { clickOptionText, fillText, firstMatch, pickOption, ruleFor, visibleOptions, wantsCheck } from "./kit.mjs";
 
 export async function workday(page, ctx, H, state) {
   const R = ctx.rules;
@@ -77,6 +77,13 @@ export async function workday(page, ctx, H, state) {
     page = await H.refresh();
     const gone = await ended();
     if (gone) return { done: true, result: gone };
+    if (/Something went wrong|Please refresh the page and then try again/i.test(await bodyText())) {
+      const tries = (state.siteErrors || 0) + 1;
+      if (tries > 2) return { done: true, result: { status: "siteError", detail: "Workday kept showing \"Something went wrong\" on " + ctx.host } };
+      H.log("Workday error page; reloading", tries);
+      page = await H.goto(ctx.applyUrl);
+      return { state: { ...state, siteErrors: tries }, done: false };
+    }
     const step = await activeStep();
     H.log("page", step);
     if (/Application Submitted|jobTasks\/completed/i.test(step + page.url())) return { done: true, result: { status: "alreadyApplied", detail: "already submitted" } };
@@ -275,7 +282,7 @@ export async function workday(page, ctx, H, state) {
     for (let k = 0; k < 8; k++) {
       const del = await page.evaluate(([pre, keep]) => {
         const items = [...document.querySelectorAll("[data-automation-id=file-upload-item], [data-automation-id=fileUploadItem]")].filter((x) => x.offsetParent);
-        const bad = items.find((x) => x.innerText.includes(pre + "_") && !keep.some((n) => x.innerText.includes(n)));
+        const bad = items.find((x) => x.innerText.includes(pre + "_") && !/transcript/i.test(x.innerText) && !keep.some((n) => x.innerText.includes(n)));
         if (!bad) return null;
         const b = bad.querySelector("[data-automation-id=delete-file], button[aria-label*=Delete], button[aria-label*=Remove]");
         if (!b) return "NOBTN";
@@ -287,12 +294,18 @@ export async function workday(page, ctx, H, state) {
       await H.sleep(1500);
     }
     const fi = page.locator("input[type=file]");
-    const have = await page.evaluate((n) => document.body.innerText.includes(n), ctx.fileNames.resume || "__none__");
-    if (!have && docs.length && (await fi.count())) {
-      await fi.first().setInputFiles(docs).catch(async () => fi.first().setInputFiles(docs[0]));
+    const shown = await page.evaluate(() => document.body.innerText);
+    const hasTranscript = /transcript/i.test(shown);
+    const missing = docs.filter((d) => {
+      const name = d.split(String.fromCharCode(92)).pop().split("/").pop();
+      if (/transcript/i.test(name) && hasTranscript) return false;
+      return !shown.includes(name);
+    });
+    if (missing.length && (await fi.count())) {
+      await fi.first().setInputFiles(missing).catch(async () => fi.first().setInputFiles(missing[0]));
       await H.sleep(9000);
       page = await H.refresh();
-      H.log("uploaded", docs.length, "documents");
+      H.log("uploaded", missing.length, "documents");
     }
     const blocks = await page.evaluate(() => [...document.querySelectorAll('input[id$="--jobTitle"]')].filter((e) => e.offsetParent && !e.value).map((e) => e.id.replace("--jobTitle", "")));
     let ji = 0;
@@ -315,7 +328,11 @@ export async function workday(page, ctx, H, state) {
     for (const b of edus) {
       const sch = page.locator('[id^="' + b + '--school"]').first();
       const isPrompt = await sch.evaluate((e) => e.getAttribute("placeholder") === "Search" || !!e.closest("[data-automation-id=multiselectInputContainer]"));
-      if (isPrompt) H.log("school", await promptPick(sch, ed.schoolSearch, [ed.schoolSearch, ed.school, "^Other"]));
+      if (isPrompt) {
+        let got = await promptPick(sch, ed.schoolSearch, [ed.schoolSearch, ed.school, "^Other"]);
+        if (got === "MISS") got = await promptPick(sch, "Other", ["^Other"]);
+        H.log("school", got);
+      }
       else await sch.fill(ed.school);
       const dg = byId(b + "--degree");
       if ((await dg.count()) && /Select One/.test(await dg.innerText())) {
@@ -402,12 +419,12 @@ export async function workday(page, ctx, H, state) {
           if (it.label) H.log("noRule", it.label.slice(0, 90));
           continue;
         }
-        if (it.val && it.val !== "Select One" && firstMatch([it.val], rule.a)) continue;
+        if (it.val && it.val !== "Select One" && pickOption([it.val], rule.a, ctx.avoid)) continue;
         await page.keyboard.press("Escape").catch(() => {});
         await H.sleep(300);
         await clickCentre(el);
         await H.sleep(1500);
-        const pick = firstMatch(await visibleOptions(page), rule.a);
+        const pick = pickOption(await visibleOptions(page), rule.a, ctx.avoid);
         if (pick) await clickOptionText(page, pick);
         else await page.keyboard.press("Escape");
         await H.sleep(700);
@@ -434,7 +451,7 @@ export async function workday(page, ctx, H, state) {
         H.log("noRule", label.slice(0, 90));
         continue;
       }
-      const pick = firstMatch(opts.map((o) => o.opt), rule.a);
+      const pick = pickOption(opts.map((o) => o.opt), rule.a, ctx.avoid);
       const o = opts.find((x) => x.opt === pick);
       if (o) await page.locator("[data-q=" + o.k + "]").check({ force: true }).catch(() => {});
     }
