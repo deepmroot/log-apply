@@ -10,7 +10,7 @@ It was built to land a co-op: 196 applications to 152 companies, 58 in one day, 
 ## Install (Claude Code)
 
 ```
-/plugin marketplace add matthewdonsemail-lab/log-apply
+/plugin marketplace add deepmroot/log-apply
 /plugin install log-apply@log-apply
 /apply-setup
 ```
