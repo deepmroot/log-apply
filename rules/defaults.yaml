@@ -1,0 +1,157 @@
+choices:
+  - q: "convicted|criminal (offen|record|charge)|pardon|pleaded guilty|found guilty"
+    a: ["^No"]
+  - q: "non-solicitation|non-compet|restrictive covenant|bound or subject|contract or employment restriction"
+    a: ["^No"]
+  - q: "family members|relatives|related to|close personal relationship|immediate family member|spouse, parent, child or sibling"
+    a: ["^No"]
+  - q: "previously (worked|employed|been employed)|former employee|prior employee|currently an employee|current employee|ever worked for|ever been employed by|worked for .* before|currently employed by"
+    a: ["^No"]
+  - q: "previously interviewed|interviewed for a position|been interviewed for"
+    a: ["^No"]
+  - q: "referred to apply|referred by|were you referred|employee referral|a referral of"
+    a: ["^No"]
+  - q: "know anyone (who|that) (works|is currently employed)"
+    a: ["^No"]
+  - q: "government official|public official|politically exposed"
+    a: ["^No"]
+  - q: "Export Control|Iran|Cuba|North Korea|sanction"
+    a: ["^No"]
+  - q: "board of directors"
+    a: ["^No"]
+  - q: "require any (assistance|accommodation)|accommodation|adjustments in our assessments"
+    a: ["^No", "do not", "not require"]
+  - q: "sponsorship|visa sponsor|require .*sponsor"
+    a: ["{{work.sponsorAnswer}}"]
+  - q: "authorized to work|eligible to work|right to work|legally able|legally (authorized|entitled|eligible|permitted)|permitted to work"
+    a: ["{{work.authorizedAnswer}}"]
+  - q: "18 years|age of 18|over 18|at least 18|age of majority|minimum age"
+    a: ["^Yes"]
+  - q: "relocat"
+    a: ["{{work.relocateAnswer}}"]
+  - q: "willing to travel|travel (is )?required|ability to travel"
+    a: ["^Yes"]
+  - q: "work (on-?site|in the office|in office|hybrid)|report to the office|in-person|go to the office"
+    a: ["^Yes"]
+  - q: "background check|background screening|criminal record check|consent to (a )?(criminal|background)"
+    a: ["^Yes", "I agree", "I consent", "Agree"]
+  - q: "co-?op program|registered in a formal co-?op|part of an official Co-op"
+    a: ["{{education.coopAnswer}}"]
+  - q: "currently (a )?(university|college) student|currently enrolled|currently attending|enrolled in (a )?post-secondary|currently pursuing"
+    a: ["^Yes"]
+  - q: "level of (your )?(current )?degree|degree level|currently pursuing a Bachelor|education opportunity|what are you graduating from"
+    a: ["{{education.degreeLevel}}", "Undergrad", "Universit", "Degree"]
+  - q: "Which University or College|which university|which school|name of (your )?(university|school|institution)|post-secondary institution"
+    a: ["{{education.schoolSearch}}", "^Other"]
+  - q: "Major|program of study|field of study|area of study"
+    a: ["^{{education.field}}$", "{{education.field}}", "^Other"]
+  - q: "year of study|what year are you|current year|academic year|year .*school program"
+    a: ["{{education.yearOrdinal}}", "{{education.yearWord}}", "^{{education.yearOfStudy}}", "Year {{education.yearOfStudy}}"]
+  - q: "expected graduation year|graduation year"
+    a: ["{{education.end.year}}"]
+  - q: "expected graduation month|graduation month"
+    a: ["{{education.end.month}}"]
+  - q: "graduation (month and year|date)|anticipated graduation|when (do you expect to|will you) (graduate|complete)"
+    a: ["{{education.end.month}} {{education.end.year}}", "{{education.end.year}}"]
+  - q: "previous (co-?op|internship|work[- ]term)|number of (previous )?(co-?op|work) terms|previous work-term"
+    a: ["^{{education.workTermsCompleted}}$", "^{{education.workTermsCompleted}} "]
+  - q: "completed (a|an|at least 1) (co-?op|internship)|previously completed an internship"
+    a: ["{{education.hasCompletedTermAnswer}}"]
+  - q: "level in French|French proficiency|proficiency in French|speak French|read and write (in )?French"
+    a: ["{{work.frenchAnswer}}", "^No", "None", "Basic"]
+  - q: "level in English|English proficiency"
+    a: ["Fluent|Native|Advanced|Proficient|Full"]
+  - q: "English (is )?your first|first language|native language"
+    a: ["{{work.englishFirstAnswer}}"]
+  - q: "preferred language|language preference"
+    a: ["^English"]
+  - q: "country of residence|country where you currently reside|Country where current school"
+    a: ["^{{contact.country}}$"]
+  - q: "From which province|province|state.*(reside|live)"
+    a: ["{{contact.region}}"]
+  - q: "how did you (first )?hear|source"
+    a: ["{{work.howDidYouHear}}", "Job Posting", "Universit", "Job Board", "^Other"]
+  - q: "years of (relevant )?(work )?experience|years.*experience"
+    a: ["0-1", "^0 ?-", "Less than", "^1 ?-", "^0"]
+  - q: "automated assessment tool|Automated Employment Decision|AI screening|artificial intelligence"
+    a: ["consent", "agree", "^Yes", "accept", "opt.?in", "continue"]
+  - q: "I understand|I declare|I certify|I acknowledge|I confirm|attest|read and understood|read and agree|review the linked document"
+    a: ["I understand|^Yes|I agree|I acknowledge|I confirm|I certify|Agree|Accept|understood|I have read"]
+  - q: "communications via SMS|WhatsApp|text message"
+    a: ["^No"]
+  - q: "salary|compensation expectation|pay expectation"
+    a: ["Prefer not", "Open", "Less than", "Under", "^[$]"]
+  - q: "available to start|start date|availability"
+    a: ["{{work.startDate.monthName}}", "Immediately|Within 1 month|1 month|2 weeks|Less than", "{{work.startDate.year}}"]
+  - q: "gender identity|^gender|identify your sex|^sex"
+    a: ["{{selfId.gender}}", "Prefer not", "Decline", "not to (say|answer|disclose)", "do not wish"]
+  - q: "pronoun"
+    a: ["{{selfId.pronouns}}", "Prefer not", "Decline"]
+  - q: "sexual orientation|LGBTQ"
+    a: ["{{selfId.lgbtq}}", "Prefer not", "Decline", "do not wish"]
+  - q: "Hispanic|Latino"
+    a: ["^No$", "^No", "Prefer not", "Decline"]
+  - q: "ethnic|race|visible minorit|groups do you most identify|Protected Groups"
+    a: ["{{selfId.race}}", "Prefer not", "Decline", "do not wish"]
+  - q: "identify as a visible minority|member of an? visible minority"
+    a: ["{{selfId.visibleMinority}}", "Prefer not", "Decline"]
+  - q: "indigenous|aboriginal|first nations"
+    a: ["{{selfId.indigenous}}", "Prefer not", "Decline"]
+  - q: "disability"
+    a: ["{{selfId.disability}}", "Prefer not", "Decline", "do not wish"]
+  - q: "veteran|Armed Forces|military|served in the"
+    a: ["{{selfId.veteran}}", "not a|^No|I am not|^I do not"]
+  - q: "consent|acknowledge|agree to|privacy|terms and conditions"
+    a: ["^Yes|I agree|I acknowledge|I consent|Agree|Accept"]
+
+checks:
+  - "I agree|I acknowledge|I consent|I certify|I accept|have read and consent|terms and conditions|read and understood"
+  - "I consent to .* (collecting|processing)|demographic data"
+  - "read the Privacy Notice|Privacy Notice and consent"
+  - "None of the above$"
+
+texts:
+  - q: "LinkedIn"
+    text: "{{contact.links.linkedin}}"
+  - q: "GitHub|Github"
+    text: "{{contact.links.github}}"
+  - q: "Website|Portfolio|personal site"
+    text: "{{contact.links.website}}"
+  - q: "GPA|grade point"
+    text: "{{education.gpa}}"
+  - q: "expected graduation|graduation date|complete your degree"
+    text: "{{education.end.month}} {{education.end.year}}"
+  - q: "earliest .*start|start date|available to start"
+    text: "{{work.startDate.text}}"
+  - q: "University|School|institution"
+    text: "{{education.school}}"
+  - q: "Major|program of study|field of study"
+    text: "{{education.field}}"
+  - q: "current or (most recent|previous) employer"
+    text: "{{experience.0.company}}"
+  - q: "current or (most recent|previous) job title"
+    text: "{{experience.0.title}}"
+  - q: "home city|city of residence|current city"
+    text: "{{contact.city}}"
+  - q: "postal code|zip"
+    text: "{{contact.postalCode}}"
+  - q: "salary expectations|compensation requirements|Expectations on Compensation|wage transparency"
+    text: "{{work.salary}}"
+  - q: "desired (annual |base )?salary|salary requirement|expected (base )?salary"
+    text: "{{work.salaryNumber}}"
+  - q: "country you are legally eligible"
+    text: "{{contact.country}}"
+  - q: "countr(y|ies) of citizenship|list all active citizenships"
+    text: "{{work.citizenshipText}}"
+  - q: "Legal Name|^Full name|I certify that the facts|electronic signature|signature"
+    text: "{{contact.firstName}} {{contact.lastName}}"
+  - q: "Licenses|Certifications"
+    text: "None at this time"
+  - q: "next available work terms|work terms"
+    text: "{{work.termsText}}"
+
+dates:
+  - q: "graduat|complete your degree|completion of (your )?(degree|studies)"
+    use: graduation
+  - q: "start|available|availability"
+    use: start

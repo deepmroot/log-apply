@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Application Ledger</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'], mono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'], display: ['"Fraunces"', 'Georgia', 'serif'] } } } };</script>
+<style>
+  body { background-image: radial-gradient(60rem 30rem at 15% -10%, rgba(56,189,248,0.10), transparent 60%), radial-gradient(50rem 30rem at 95% 0%, rgba(52,211,153,0.07), transparent 60%); background-repeat: no-repeat; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  details[open] > summary .chev { transform: rotate(90deg); }
+  .chev { transition: transform .15s ease; }
+</style>
+</head>
+<body class="bg-[#0b1020] text-slate-200 font-sans antialiased">
+<div class="max-w-6xl mx-auto px-4 sm:px-8 py-12 sm:py-16">
+  <header class="pb-8 mb-8 border-b border-white/5">
+    <div class="font-mono text-xs uppercase tracking-[0.2em] text-sky-400 mb-4">%%NAME%% · made with log apply</div>
+    <h1 class="font-display text-5xl sm:text-6xl font-semibold text-white">The Application Ledger</h1>
+    <p class="mt-3 text-slate-400 max-w-2xl">Every application my agent sent, with the tailored resume and cover letter for each and the original posting.</p>
+  </header>
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" id="stats"></div>
+  <div class="flex h-2 w-full overflow-hidden rounded-full bg-white/5 mb-8" id="bar"></div>
+  <section class="mb-10 rounded-xl border border-white/5 bg-white/[0.02] p-5">
+    <div class="flex flex-wrap items-baseline justify-between gap-2 mb-4"><h2 class="font-display text-lg text-slate-100">Applications per day</h2><span class="font-mono text-xs text-slate-500" id="heatSummary"></span></div>
+    <div class="grid grid-flow-col grid-rows-7 gap-[4px]" style="grid-template-columns: repeat(26, minmax(0, 1fr));" id="heat"></div>
+  </section>
+  <section>
+    <div class="sticky top-0 z-10 -mx-4 sm:-mx-8 px-4 sm:px-8 py-3 mb-3 bg-[#0b1020]/90 backdrop-blur border-b border-white/5">
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap gap-1" id="tabs"></div>
+        <input id="search" type="search" placeholder="Search company, role, city…" class="ml-auto w-full sm:w-72 rounded-md border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-400/50">
+      </div>
+      <div class="mt-2 font-mono text-xs text-slate-500" id="summary"></div>
+    </div>
+    <div class="rounded-xl border border-white/5 divide-y divide-white/5 bg-white/[0.02] overflow-hidden" id="list"></div>
+    <div class="mt-3 text-center" id="more"></div>
+  </section>
+  <footer class="text-center font-mono text-xs text-slate-500 mt-10">made with <a class="underline underline-offset-2 hover:text-slate-300" href="https://log.listeningkit.com/apply">log apply</a></footer>
+</div>
+<script>
+  var ROWS = [], VIEW = { tab: "applied", q: "", shown: 25, open: {} }, PAGE = 25;
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+  var PILL = { applied: "bg-emerald-400/10 text-emerald-300 border-emerald-400/20", interview: "bg-violet-400/10 text-violet-300 border-violet-400/20", rejected: "bg-rose-400/10 text-rose-300 border-rose-400/20", prepared: "bg-amber-300/10 text-amber-200 border-amber-300/20" };
+  var group = function (c) { var i = String(c).indexOf(" ("); return i > 0 ? c.slice(0, i) : c; };
+  function row(d) {
+    var key = "row:" + d.slug, links = "";
+    if (d.resume) links += '<a class="text-sm text-sky-400 hover:underline" href="' + esc(d.resume) + '" target="_blank">Resume</a>';
+    if (d.cover) links += '<a class="text-sm text-sky-400 hover:underline" href="' + esc(d.cover) + '" target="_blank">Cover letter</a>';
+    if (d.url) links += '<a class="text-sm text-sky-400 hover:underline" href="' + esc(d.url) + '" target="_blank">Posting ↗</a>';
+    return '<details data-key="' + esc(key) + '"' + (VIEW.open[key] ? " open" : "") + '><summary class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.03]"><span class="chev text-slate-500 text-xs w-3">▸</span><span class="min-w-0 flex-1"><span class="block truncate text-sm font-medium text-slate-100">' + esc(d.company) + '</span><span class="block truncate text-xs text-slate-500">' + esc(d.role) + '</span></span><span class="hidden md:block w-40 truncate font-mono text-xs text-slate-500">' + esc(d.location) + '</span><span class="hidden sm:block w-24 font-mono text-xs text-slate-500 text-right">' + esc(d.date || "") + '</span><span class="shrink-0 text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded border ' + (PILL[d.status] || PILL.prepared) + '">' + esc(d.status) + '</span></summary><div class="grid gap-3 sm:grid-cols-[2fr_1fr] px-4 pb-4 pt-1 pl-10"><div class="text-sm text-slate-400">' + esc(d.evidence || "") + '</div><div class="flex flex-col items-start gap-1.5">' + links + '</div></div></details>';
+  }
+  function grouped(g) {
+    if (g.rows.length === 1) return row(g.rows[0]);
+    var key = "group:" + g.name;
+    return '<details data-key="' + esc(key) + '"' + (VIEW.open[key] || VIEW.q ? " open" : "") + '><summary class="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.03]"><span class="chev text-slate-500 text-xs w-3">▸</span><span class="min-w-0 flex-1 truncate text-sm font-medium text-slate-100">' + esc(g.name) + '</span><span class="w-[86px] text-right font-mono text-[10px] uppercase tracking-wide text-slate-500">' + g.rows.length + ' roles</span></summary><div class="border-t border-white/5 divide-y divide-white/5 bg-white/[0.015]">' + g.rows.map(row).join("") + '</div></details>';
+  }
+  function render() {
+    var lists = { applied: [], prepared: [], interview: [], rejected: [] };
+    ROWS.forEach(function (r) { (lists[r.status] || lists.prepared).push(r); });
+    lists.all = ROWS.slice();
+    ["applied", "rejected", "all"].forEach(function (k) { lists[k].sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); }); });
+    document.getElementById("stats").innerHTML = [["Applied", lists.applied.length, "text-emerald-300"], ["Tracked", ROWS.length, "text-sky-300"], ["Interview", lists.interview.length, "text-violet-300"], ["Rejected", lists.rejected.length, "text-rose-300"]].map(function (s) { return '<div class="rounded-xl border border-white/5 bg-white/[0.03] p-5"><div class="font-mono text-4xl tabular-nums ' + s[2] + '">' + s[1] + '</div><div class="text-xs uppercase tracking-wide text-slate-400 mt-2">' + s[0] + '</div></div>'; }).join("");
+    document.getElementById("bar").innerHTML = [[lists.applied.length, "bg-emerald-400"], [lists.interview.length, "bg-violet-400"], [lists.prepared.length, "bg-amber-300"], [lists.rejected.length, "bg-rose-400"]].filter(function (p) { return p[0]; }).map(function (p) { return '<div class="' + p[1] + '" style="width:' + (100 * p[0] / Math.max(ROWS.length, 1)) + '%"></div>'; }).join("");
+    var perDay = {}; lists.applied.concat(lists.interview).forEach(function (r) { if (r.date) perDay[r.date] = (perDay[r.date] || 0) + 1; });
+    var key = function (d) { return d.toISOString().slice(0, 10); }, today = new Date(); today.setUTCHours(0, 0, 0, 0);
+    var start = new Date(today); start.setUTCDate(start.getUTCDate() - start.getUTCDay() - 25 * 7);
+    var cells = "", best = 0, week = 0;
+    for (var d = new Date(start); d <= today; d.setUTCDate(d.getUTCDate() + 1)) { var n = perDay[key(d)] || 0; if (n > best) best = n; if ((today - d) / 864e5 < 7) week += n; cells += '<div class="aspect-square rounded-[4px] ' + (n === 0 ? "bg-white/5" : n < 3 ? "bg-emerald-900" : n < 7 ? "bg-emerald-700" : n < 15 ? "bg-emerald-500" : "bg-emerald-300") + '" title="' + key(d) + ": " + n + '"></div>'; }
+    document.getElementById("heat").innerHTML = cells;
+    document.getElementById("heatSummary").textContent = (perDay[key(today)] || 0) + " today · " + week + " this week · best day " + best;
+    document.getElementById("tabs").innerHTML = [["applied", "Applied"], ["prepared", "Prepared"], ["interview", "Interview"], ["rejected", "Rejected"], ["all", "All"]].map(function (t) { var on = VIEW.tab === t[0]; return '<button class="tab rounded-md px-3 py-1.5 text-xs font-medium border ' + (on ? "border-sky-400/40 bg-sky-400/15 text-sky-200" : "border-white/10 text-slate-400 hover:text-slate-200") + '" data-tab="' + t[0] + '">' + t[1] + ' <span class="font-mono opacity-70">' + lists[t[0]].length + '</span></button>'; }).join("");
+    var q = VIEW.q.trim().toLowerCase();
+    var rows = lists[VIEW.tab].filter(function (r) { return !q || [r.company, r.role, r.location, r.evidence].join(" ").toLowerCase().indexOf(q) !== -1; });
+    var order = [], by = {}; rows.forEach(function (r) { var g = group(r.company); if (!by[g]) { by[g] = []; order.push(g); } by[g].push(r); });
+    var groups = order.map(function (g) { return { name: g, rows: by[g] }; }), shown = groups.slice(0, VIEW.shown);
+    document.getElementById("list").innerHTML = shown.length ? shown.map(grouped).join("") : '<div class="p-10 text-center text-slate-500 text-sm">Nothing here yet.</div>';
+    var left = groups.length - shown.length;
+    document.getElementById("more").innerHTML = left > 0 ? '<button class="more rounded-md border border-white/10 px-4 py-2 text-xs text-slate-300 hover:text-white">Show ' + Math.min(PAGE, left) + ' more (' + left + ' left)</button>' : "";
+    document.getElementById("summary").textContent = rows.length + " applications at " + groups.length + " companies · click a row for its resume, cover letter and posting";
+  }
+  document.addEventListener("toggle", function (e) { if (e.target.dataset && e.target.dataset.key) VIEW.open[e.target.dataset.key] = e.target.open; }, true);
+  document.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest(".tab"); if (t) { VIEW.tab = t.dataset.tab; VIEW.shown = PAGE; render(); } else if (e.target.closest && e.target.closest(".more")) { VIEW.shown += PAGE; render(); } });
+  document.addEventListener("input", function (e) { if (e.target.id === "search") { VIEW.q = e.target.value; VIEW.shown = PAGE; render(); } });
+  fetch("applications.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (rows) { ROWS = rows; render(); }).catch(function () { render(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "log-apply",
+  "description": "log apply: your agent applies to jobs for you. It finds postings, writes a one-page LaTeX resume and cover letter for each, fills Workday and Greenhouse in your own browser, and keeps a public ledger of every application.",
+  "version": "0.1.0",
+  "author": {
+    "name": "ListeningKit",
+    "url": "https://log.listeningkit.com/apply"
+  },
+  "homepage": "https://log.listeningkit.com/apply",
+  "license": "MIT",
+  "keywords": ["jobs", "internships", "co-op", "workday", "greenhouse", "resume", "automation"]
+}

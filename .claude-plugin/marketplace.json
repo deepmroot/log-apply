@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "log-apply",
+  "description": "log apply by ListeningKit: your agent applies to jobs for you.",
+  "owner": {
+    "name": "ListeningKit",
+    "url": "https://log.listeningkit.com"
+  },
+  "plugins": [
+    {
+      "name": "log-apply",
+      "description": "Find postings, tailor a LaTeX resume and cover letter per job, fill Workday and Greenhouse, and keep a ledger of every application.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+contact:
+  firstName: Alex
+  lastName: Rivera
+  email: alex@example.com
+  phone: "6045550123"
+  phoneCountry: Canada
+  address: 123 Main St
+  city: Vancouver
+  region: British Columbia
+  regionCode: BC
+  postalCode: V6B 1A1
+  country: Canada
+  links:
+    website: https://alex.dev
+    linkedin: https://www.linkedin.com/in/alex
+    github: https://github.com/alex
+
+education:
+  school: University of British Columbia
+  schoolSearch: British Columbia
+  degree: Bachelor of Science in Computer Science (Co-op)
+  degreeLevel: Bachelor
+  field: Computer Science
+  location: Vancouver, BC
+  start: { month: September, year: 2023 }
+  end: { month: April, year: 2028 }
+  yearOfStudy: 3
+  gpa: "3.6/4.0"
+  coopProgram: true
+  workTermsCompleted: 1
+  details:
+    - Relevant coursework: Data Structures, Operating Systems, Databases
+
+work:
+  authorizedCountries: [Canada]
+  needsSponsorship: false
+  citizenship: [Canada]
+  permit: ""
+  willingToRelocate: true
+  startDate: { month: "01", day: "04", year: "2027", text: January 4, 2027 }
+  terms: [Winter 2027, Summer 2027]
+  termMonths: [4, 8, 12]
+  salary: "Open to the posted intern rate for this role."
+  salaryNumber: "45000"
+  languages:
+    english: Fluent
+    french: None
+  howDidYouHear: University Job Posting
+
+selfId:
+  gender: Prefer not to say
+  pronouns: Prefer not to say
+  race: Prefer not to say
+  visibleMinority: Prefer not to say
+  indigenous: Prefer not to say
+  disability: Prefer not to say
+  veteran: No
+  lgbtq: Prefer not to say
+
+documents:
+  transcript: ""
+  outDir: out
+  filePrefix: Alex_Rivera
+
+experience:
+  - key: acme
+    title: Software Developer Co-op
+    company: Acme Corp
+    location: Vancouver, BC
+    dates: May 2025 -- Aug 2025
+    start: { month: "05", year: "2025" }
+    current: false
+    bullets:
+      - Built an internal dashboard in React and TypeScript used by 40 support staff daily.
+      - Cut a nightly data job from 2 hours to 15 minutes by batching database writes.
+      - Wrote integration tests that caught 12 regressions before release.
+
+projects:
+  - key: tracker
+    name: Job Tracker
+    role: Solo Developer
+    liveUrl: https://tracker.alex.dev
+    repoUrl: https://github.com/alex/tracker
+    skills: [Next.js, Postgres, Playwright]
+    tags: [full-stack, automation]
+    bullets:
+      - Shipped a job-application tracker with a public ledger of every submission.
+      - Automated form filling with Playwright across Workday and Greenhouse.
+
+skills:
+  - "\\textbf{Languages}: Python, TypeScript, Java, SQL"
+  - "\\textbf{Tools}: React, Node.js, Postgres, Docker, Git"
+
+answers:
+  - q: "previously (worked|been employed)|former employee"
+    a: ["^No"]
+  - q: "Why are you interested"
+    text: "I want to work on products people use every day, on a team that ships often."

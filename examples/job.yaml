@@ -1,0 +1,15 @@
+slug: AcmeBackendCoopW27
+company: Acme (Backend Developer Co-op)
+displayCompany: Acme
+role: Backend Developer Co-op - Winter 2027
+location: Vancouver, BC
+url: https://job-boards.greenhouse.io/acme/jobs/1234567
+summary: Third-year Computer Science co-op student who builds backend services in TypeScript and Python, with **two production apps** shipped. Seeking Acme's Winter 2027 Backend Developer Co-op in Vancouver.
+paragraphs:
+  - I am applying for the Backend Developer Co-op at Acme for Winter 2027. Building reliable APIs that real customers depend on is the work I enjoy most.
+  - At Acme Corp I built an internal dashboard in React and TypeScript used by 40 support staff daily, and cut a nightly data job from 2 hours to 15 minutes by batching database writes.
+  - On my own, I shipped a job-application tracker with a public ledger of every submission, and automated form filling with Playwright across Workday and Greenhouse.
+  - Your posting asks for API design, SQL and testing. I write integration tests by default; at Acme Corp they caught 12 regressions before release.
+  - I would welcome the chance to talk about how I could contribute to Acme's backend team. Thank you for your time.
+expOrder: [acme]
+projectKeys: [tracker]

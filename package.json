@@ -1,0 +1,22 @@
+{
+  "name": "log-apply",
+  "version": "0.1.0",
+  "description": "log apply: your agent applies to jobs for you. A tailored LaTeX resume and cover letter per job, the form filled on Workday and Greenhouse, every submission on your own ledger.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "log-apply": "bin/log-apply.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "doctor": "node bin/log-apply.mjs doctor"
+  },
+  "dependencies": {
+    "imapflow": "1.0.184",
+    "playwright-core": "1.56.1",
+    "yaml": "2.8.1"
+  }
+}

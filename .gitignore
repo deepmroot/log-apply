@@ -1,0 +1,12 @@
+node_modules/
+profile.yaml
+.env
+.env.local
+out/
+jobs/
+applications.json
+ledger/applications.json
+*.aux
+*.log
+*.out
+__pycache__/
