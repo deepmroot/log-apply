@@ -46,7 +46,7 @@ test("sites are told apart by their host", () => {
   assert.equal(siteOf("https://acme.wd3.myworkdayjobs.com/en-US/Careers/job/Toronto/Dev_R1").site, "workday");
   assert.equal(siteOf("https://job-boards.greenhouse.io/acme/jobs/123").site, "greenhouse");
   assert.equal(siteOf("https://www.acme.com/careers?gh_jid=123").site, "greenhouse");
-  assert.equal(siteOf("https://jobs.lever.co/acme/123").site, null);
+  assert.equal(siteOf("https://jobs.lever.co/acme/123").site, "lever");
 });
 
 test("the first rule that matches a question wins, and options match in order", () => {
@@ -65,4 +65,19 @@ test("a non-citizen is never answered as a citizen or permanent resident", async
   assert.equal(pickOption(opts, ["^Yes"], avoid), "No: Non-Canadian Citizen/Non-Canadian Permanent Resident.");
   assert.equal(pickOption(["Yes", "No"], ["^Yes"], avoid), "Yes");
   assert.equal(pickOption(opts, ["^Yes"], []), "Yes: Canadian Citizen/Lawful Permanent Resident.");
+});
+
+test("Ashby, Lever and BambooHR postings route to the forms filler", () => {
+  assert.equal(siteOf("https://jobs.ashbyhq.com/acme/0b1c2d3e-0000-4000-8000-000000000000").site, "ashby");
+  assert.equal(siteOf("https://jobs.lever.co/acme/0b1c2d3e-0000-4000-8000-000000000000/apply").site, "lever");
+  assert.equal(siteOf("https://acme.bamboohr.com/careers/101").site, "bamboohr");
+  assert.equal(siteOf("https://example.com/careers").site, null);
+});
+
+test("find keys postings the same way across URL shapes", async () => {
+  const { keyOf } = await import("../src/find.mjs");
+  assert.equal(keyOf("https://acme.wd3.myworkdayjobs.com/en-US/X/job/Toronto/Dev-Intern_R12345-1"), "r12345");
+  assert.equal(keyOf("https://job-boards.greenhouse.io/acme/jobs/4729021005"), "4729021005");
+  assert.equal(keyOf("https://www.acme.com/careers?gh_jid=8212194"), "8212194");
+  assert.equal(keyOf("https://jobs.lever.co/acme/3b6d3dfe-5e49-41c9-98a5-f732fa63fdf4/apply"), keyOf("https://jobs.lever.co/acme/3b6d3dfe-5e49-41c9-98a5-f732fa63fdf4"));
 });

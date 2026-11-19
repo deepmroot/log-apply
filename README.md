@@ -2,7 +2,7 @@
 
 **Your agent applies to jobs for you.** For each posting it:
 - writes a one-page LaTeX resume and cover letter tailored to that job
-- fills the application on Workday or Greenhouse in your own browser
+- fills the application on Workday, Greenhouse, Ashby, Lever or BambooHR in your own browser
 - keeps a public ledger of every application, with the documents it sent
 
 Built for a real job search: as many applications as you want in a day, each with its own resume and cover letter. Part of [log](https://github.com/matthewdonsemail-lab/log) by ListeningKit.
@@ -23,10 +23,10 @@ Then just ask: `/apply https://job-boards.greenhouse.io/acme/jobs/1234567`, or `
 
 | Step | How |
 |---|---|
-| Find | Postings you give it, or [treg](https://treg.to): every open job on a company's own board (Greenhouse, Ashby, Lever and more), cross-company search, and a check that drops postings already taken down. It never automates LinkedIn. |
+| Find | `log-apply find`: new intern and co-op postings from SimplifyJobs and community GitHub lists, with redirector links resolved to the employer's own form and anything already in your tracker dropped. Or postings you give it, or [treg](https://treg.to): every open job on a company's own board (Greenhouse, Ashby, Lever and more), cross-company search, and a check that drops postings already taken down. It never automates LinkedIn. |
 | Tailor | Claude writes a summary and cover letter for the job, only from facts in your `profile.yaml` |
 | Documents | `docs/render.py`: real `pdflatex`, one page, clickable links, and a refusal when the result isn't exactly one page |
-| Fill | Workday (sign in or account, every wizard page, screening questions, self-ID, Review) and Greenhouse (form, files, custom questions, security code from mail) |
+| Fill | Workday (sign in or account, every wizard page, screening questions, self-ID, Review), Greenhouse (form, files, custom questions, security code from mail), and Ashby, Lever and BambooHR (one-page forms: files, location and school pickers, yes/no buttons, date pickers, custom questions). If a site shows a CAPTCHA at submit, the run stops and leaves the filled tab for you to finish. |
 | Submit | Only with `--submit`, or `AUTOSUBMIT` in your folder |
 | Track | `applications.json`, and `log-apply ledger` builds a static site of every application |
 
@@ -44,6 +44,7 @@ log-apply docs  <job.yaml>
 log-apply apply <job.yaml> [--driver chrome|aside] [--submit] [--keep-open] [--google]
 log-apply track <job.yaml> --status applied|interview|rejected|prepared
 log-apply ledger [--out <dir>]
+log-apply find   [--out jobs.json]
 ```
 
 ## Your answers

@@ -104,6 +104,21 @@ choices:
   - q: "consent|acknowledge|agree to|privacy|terms and conditions"
     a: ["^Yes|I agree|I acknowledge|I consent|Agree|Accept"]
 
+  - q: "return(ing)? to (a degree-seeking program|your studies|school) (after|at the conclusion)|returning to your studies"
+    a: ["^Yes"]
+  - q: "work full-time during the (listed )?dates|available to work full-time|40 hours"
+    a: ["^Yes"]
+  - q: "contract or contingent worker"
+    a: ["^No"]
+  - q: "consider me for other (job )?opportunities|other (open )?roles"
+    a: ["^Yes"]
+  - q: "office location and RTO|location and in-office requirements|requirements work for you"
+    a: ["^Yes"]
+  - q: "transgender"
+    a: ["{{selfId.transgender}}", "Prefer not", "Decline", "^No"]
+  - q: "age range|what is your age"
+    a: ["Prefer not", "Decline"]
+
 checks:
   - "I agree|I acknowledge|I consent|I certify|I accept|have read and consent|terms and conditions|read and understood"
   - "I consent to .* (collecting|processing)|demographic data"
@@ -111,6 +126,20 @@ checks:
   - "None of the above$"
 
 texts:
+  - q: "which term|term are you applying|work term are you"
+    text: "{{work.termsText}}"
+  - q: "programm?ing languages"
+    text: "{{work.languagesText}}"
+  - q: "year .*(expected|expect) to graduate|expected graduation year|graduation year"
+    text: "{{education.end.month}} {{education.end.year}}"
+  - q: "hourly rate|hourly (pay|wage|compensation)"
+    text: "{{work.salary}}"
+  - q: "how soon can you (join|start)|when (are you looking to|can you) start|earliest you can start"
+    text: "{{work.startDate.text}}"
+  - q: "preferred (first )?name"
+    text: "{{contact.firstName}}"
+  - q: "former employee of|previously employed by"
+    text: "N/A"
   - q: "LinkedIn"
     text: "{{contact.links.linkedin}}"
   - q: "GitHub|Github"

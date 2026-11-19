@@ -41,6 +41,8 @@ export function derive(raw) {
   w.englishFirstAnswer = /native|first/i.test(String(w.languages?.english || "")) ? "^Yes" : "^Yes";
   w.citizenshipText = (w.citizenship || []).join(", ");
   w.termsText = (w.terms || []).join(", ");
+  const langLine = (p.skills || []).map(String).find((x) => /languages/i.test(x)) || "";
+  w.languagesText = w.programmingLanguages || langLine.replace(/\textbf\{[^}]*\}:?\s*/g, "").replace(/^[^:]*:\s*/, "").replace(/[\{}]/g, "").trim();
   if (w.startDate) w.startDate.monthName = monthName(w.startDate.month);
   e.coopAnswer = yesNo(Boolean(e.coopProgram));
   e.hasCompletedTermAnswer = yesNo(Number(e.workTermsCompleted || 0) > 0);

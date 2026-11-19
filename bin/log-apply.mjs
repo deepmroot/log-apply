@@ -8,7 +8,8 @@ import { asideAvailable } from "../src/drivers/aside.mjs";
 import { findChrome, launchBrowser, PROFILE_DIR } from "../src/drivers/cdp.mjs";
 import { imapConfigured } from "../src/mail/imap.mjs";
 import { loadProfile, profilePath, ROOT } from "../src/profile.mjs";
-import { buildLedger, record } from "../src/tracker.mjs";
+import { findJobs } from "../src/find.mjs";
+import { buildLedger, readTracker, record } from "../src/tracker.mjs";
 
 const USAGE = `log apply: your agent applies to jobs for you
 
@@ -20,6 +21,9 @@ const USAGE = `log apply: your agent applies to jobs for you
                                        fill the job's form; it is left unsubmitted unless --submit
   log-apply track <job.yaml> --status applied|interview|rejected|prepared [--evidence "..."]
   log-apply ledger [--out <dir>]       build the public ledger site from applications.json
+  log-apply find [--out <file>]        list new intern/co-op postings from SimplifyJobs and community
+                                       GitHub lists, resolved to the employer's own form, minus ones
+                                       already in applications.json (profile find: location/include/exclude)
 
   --profile <path> picks a profile other than ./profile.yaml (or LOG_APPLY_PROFILE).`;
 
@@ -142,6 +146,21 @@ async function main() {
     if (!["applied", "interview", "rejected", "prepared"].includes(status)) throw new Error("statusInvalid: --status is applied, interview, rejected or prepared");
     const row = record(profile, job, { status, ...(status === "applied" ? { date: f.date || new Date().toISOString().slice(0, 10) } : {}), ...(f.evidence ? { evidence: f.evidence } : {}) });
     return console.log(JSON.stringify(row, null, 2));
+  }
+
+  if (cmd === "find") {
+    const known = readTracker(profile).map((r) => r.url).filter(Boolean);
+    const jobs = await findJobs({ ...(profile.find || {}), known });
+    const bySite = {};
+    for (const j of jobs) {
+      const s = siteOf(j.url).site || "other";
+      j.site = s;
+      bySite[s] = (bySite[s] || 0) + 1;
+    }
+    if (f.out) writeFileSync(resolve(f.out), JSON.stringify(jobs, null, 2) + "\n");
+    console.error(`found ${jobs.length} new postings: ${Object.entries(bySite).map(([k, v]) => `${k} ${v}`).join(", ")}`);
+    if (!f.out) console.log(JSON.stringify(jobs, null, 2));
+    return;
   }
 
   if (cmd === "ledger") {

@@ -4,6 +4,7 @@ import { homedir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { asideAvailable, runAside } from "./drivers/aside.mjs";
 import { runCdp } from "./drivers/cdp.mjs";
+import { forms } from "./fillers/forms.mjs";
 import { greenhouse } from "./fillers/greenhouse.mjs";
 import { workday } from "./fillers/workday.mjs";
 import { datesFor } from "./profile.mjs";
@@ -15,6 +16,9 @@ export function siteOf(url) {
   const host = new URL(url).hostname;
   if (/myworkdayjobs\.com$|myworkdaysite\.com$/i.test(host)) return { site: "workday", host, filler: workday };
   if (/greenhouse\.io$/i.test(host) || /[?&]gh_jid=/.test(url)) return { site: "greenhouse", host, filler: greenhouse };
+  if (/(^|\.)ashbyhq\.com$/i.test(host)) return { site: "ashby", host, filler: forms };
+  if (/(^|\.)lever\.co$/i.test(host)) return { site: "lever", host, filler: forms };
+  if (/\.bamboohr\.com$/i.test(host)) return { site: "bamboohr", host, filler: forms };
   return { site: null, host, filler: null };
 }
 
@@ -81,7 +85,7 @@ export function contextFor(profile, job, url, opts) {
 
 export async function apply(profile, job, url, opts = {}) {
   const { site, filler } = siteOf(url);
-  if (!filler) return { status: "unsupportedSite", detail: `log apply has no filler for ${new URL(url).hostname} yet (Workday and Greenhouse so far)` };
+  if (!filler) return { status: "unsupportedSite", detail: `log apply has no filler for ${new URL(url).hostname} yet (Workday, Greenhouse, Ashby, Lever and BambooHR so far)` };
   const driver = opts.driver || process.env.LOG_APPLY_DRIVER || "chrome";
   const { ctx, files } = contextFor(profile, job, url, { ...opts, driver });
   if (!files.resume) return { status: "documentsMissing", detail: `no resume for ${job.slug}: run log-apply docs first` };
