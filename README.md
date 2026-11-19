@@ -5,7 +5,7 @@
 - fills the application on Workday or Greenhouse in your own browser
 - keeps a public ledger of every application, with the documents it sent
 
-It was built to land a co-op: 196 applications to 152 companies, 58 in one day, each with its own resume and cover letter. Part of [log](https://github.com/matthewdonsemail-lab/log) by ListeningKit.
+Built for a real job search: as many applications as you want in a day, each with its own resume and cover letter. Part of [log](https://github.com/matthewdonsemail-lab/log) by ListeningKit.
 
 ## Install (Claude Code)
 
@@ -15,7 +15,7 @@ It was built to land a co-op: 196 applications to 152 companies, 58 in one day, 
 /apply-setup
 ```
 
-Then just ask: `/apply https://job-boards.greenhouse.io/acme/jobs/1234567`, or `/apply co-op software Vancouver`, or `/loop /apply` to keep it going.
+Then just ask: `/apply https://job-boards.greenhouse.io/acme/jobs/1234567`, or `/apply software jobs Vancouver`, or `/loop /apply` to keep it going.
 
 ## What it does
 
