@@ -81,3 +81,17 @@ test("find keys postings the same way across URL shapes", async () => {
   assert.equal(keyOf("https://www.acme.com/careers?gh_jid=8212194"), "8212194");
   assert.equal(keyOf("https://jobs.lever.co/acme/3b6d3dfe-5e49-41c9-98a5-f732fa63fdf4/apply"), keyOf("https://jobs.lever.co/acme/3b6d3dfe-5e49-41c9-98a5-f732fa63fdf4"));
 });
+
+import { parseAlert, slugGuesses, titleMatch } from "../src/watch.mjs";
+
+test("parseAlert reads LinkedIn alert cards", () => {
+  const body = "# [Your job alert for **Software Engineer Intern**][5]\n\n[][6]\n\n[[Software Developer, Co-op][7]\n\nClio · Calgary, AB\n\nActively recruiting][8]\n";
+  assert.deepEqual(parseAlert(body), [{ title: "Software Developer, Co-op", company: "Clio", location: "Calgary, AB" }]);
+});
+
+test("slugGuesses and titleMatch", () => {
+  assert.ok(slugGuesses("Global Relay Communications Inc.").includes("globalrelaycommunications"));
+  assert.ok(slugGuesses("Clio").includes("clio"));
+  assert.ok(titleMatch("Software Developer, Co-op", "Software Developer Co-op (Winter 2027)"));
+  assert.ok(!titleMatch("Data Analyst Intern", "Software Developer Co-op"));
+});

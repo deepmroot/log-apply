@@ -45,7 +45,28 @@ log-apply apply <job.yaml> [--driver chrome|aside] [--submit] [--keep-open] [--g
 log-apply track <job.yaml> --status applied|interview|rejected|prepared
 log-apply ledger [--out <dir>]
 log-apply find   [--out jobs.json]
+log-apply watch  [--every 20] [--hours 24] [--known ledger.html] [--queue queue.json] [--backfill]
 ```
+
+### Watch for new postings
+
+`log-apply watch` polls three sources and queues postings you have not seen:
+
+- the SimplifyJobs and community GitHub lists that `find` reads;
+- the job boards you name in `profile.yaml`, polled straight from their public APIs, which usually show a posting before any aggregator does:
+
+  ```yaml
+  watch:
+    boards:
+      - { company: Clio, ats: lever, slug: clio }
+      - { company: Wealthsimple, ats: ashby, slug: wealthsimple }
+      - { company: Hootsuite, ats: greenhouse, slug: hootsuite }
+    known: [../coop-ledger/index.html]   # any file whose URLs count as already handled
+  ```
+
+- your LinkedIn job-alert emails, read from your own mailbox (Aside's Gmail, or IMAP with `LOG_APPLY_IMAP_USER` and `LOG_APPLY_IMAP_PASS`). LinkedIn itself is never opened. Each alert is matched to the same posting on the company's own Greenhouse, Lever or Ashby board so it can be applied to there; anything not found is queued with a note to look it up on the company's careers site.
+
+New postings go to `watch-queue.json`. Set `LOG_APPLY_NTFY_TOPIC` to a private topic name and subscribe to it in the ntfy app to get each batch as a phone notification. The first run only records what already exists; pass `--backfill` to queue those too. `--every 20` keeps it running and checks every 20 minutes.
 
 ## Your answers
 

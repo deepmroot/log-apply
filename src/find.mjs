@@ -32,6 +32,7 @@ export function keyOf(url) {
 
 function rowsFromReadme(md, source) {
   const out = [];
+  let lastCompany = "";
   for (const line of md.split("\n")) {
     if (!line.startsWith("|") || !/https?:/.test(line)) continue;
     const cells = line.split("|").slice(1, -1).map((c) => c.trim());
@@ -39,7 +40,10 @@ function rowsFromReadme(md, source) {
     if (!urls.length) continue;
     const text = cells.map((c) => c.replace(/<[^>]+>/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/\*\*/g, "").trim());
     const title = text.slice(1).find((c) => TITLE.test(c)) || text[1] || "";
-    out.push({ company: text[0] || "", title, location: text[2] || "", url: urls[0], source });
+    let company = (text[0] || "").replace(/&amp;/g, "&");
+    if (/^↳|^↳/.test(company) || !company) company = lastCompany;
+    else lastCompany = company;
+    out.push({ company, title: title.replace(/&amp;/g, "&"), location: text[2] || "", url: urls[0], source });
   }
   return out;
 }

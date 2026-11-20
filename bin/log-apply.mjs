@@ -10,6 +10,7 @@ import { imapConfigured } from "../src/mail/imap.mjs";
 import { loadProfile, profilePath, ROOT } from "../src/profile.mjs";
 import { findJobs } from "../src/find.mjs";
 import { buildLedger, readTracker, record } from "../src/tracker.mjs";
+import { watchOnce } from "../src/watch.mjs";
 
 const USAGE = `log apply: your agent applies to jobs for you
 
@@ -24,6 +25,13 @@ const USAGE = `log apply: your agent applies to jobs for you
   log-apply find [--out <file>]        list new intern/co-op postings from SimplifyJobs and community
                                        GitHub lists, resolved to the employer's own form, minus ones
                                        already in applications.json (profile find: location/include/exclude)
+  log-apply watch [--every <min>] [--hours <n>] [--known <file,...>] [--queue <file>] [--backfill]
+                  [--sources lists,boards,linkedin]
+                                       poll for new postings: the GitHub lists, the job boards in profile
+                                       watch.boards, and your LinkedIn alert emails (read from your mailbox;
+                                       LinkedIn itself is never opened). New ones go to the queue file and,
+                                       with LOG_APPLY_NTFY_TOPIC set, to your phone through ntfy.sh. The
+                                       first run only records what already exists unless --backfill.
 
   --profile <path> picks a profile other than ./profile.yaml (or LOG_APPLY_PROFILE).`;
 
@@ -161,6 +169,35 @@ async function main() {
     console.error(`found ${jobs.length} new postings: ${Object.entries(bySite).map(([k, v]) => `${k} ${v}`).join(", ")}`);
     if (!f.out) console.log(JSON.stringify(jobs, null, 2));
     return;
+  }
+
+  if (cmd === "watch") {
+    const w = profile.watch || {};
+    const queuePath = resolve(f.queue || w.queue || join(profile.dir, "watch-queue.json"));
+    const knownFiles = String(f.known || (w.known || []).join(",")).split(",").map((s) => s.trim()).filter((s) => s && s !== "true").map((s) => resolve(profile.dir, s));
+    const sources = f.sources ? String(f.sources).split(",") : w.sources;
+    const every = Number(f.every || 0);
+    const cycle = async () => {
+      const r = await watchOnce({
+        stateDir: STATE_DIR, queuePath, hours: Number(f.hours || w.hours || 24), sources, boards: w.boards || [], find: profile.find || {},
+        trackerUrls: readTracker(profile).map((x) => x.url).filter(Boolean), knownFiles, backfill: Boolean(f.backfill), log: (l) => console.error(`  ${l}`),
+      });
+      const stamp = new Date().toLocaleTimeString();
+      if (r.baseline) console.error(`${stamp} first run: recorded ${r.baseline} existing postings as seen (use --backfill to queue them instead)`);
+      console.error(`${stamp} checked ${r.checked}, new ${r.fresh.length}${r.pushed ? " (sent to phone)" : ""}`);
+      for (const j of r.fresh) console.log(`${j.company} | ${j.title} | ${j.location || ""} | ${j.url || "not on a public board"}`);
+    };
+    await cycle();
+    if (!every) return;
+    console.error(`watching every ${every} min; new postings go to ${queuePath}. Ctrl+C to stop.`);
+    for (;;) {
+      await new Promise((r) => setTimeout(r, every * 60_000));
+      try {
+        await cycle();
+      } catch (e) {
+        console.error(`cycle failed: ${e.message}`);
+      }
+    }
   }
 
   if (cmd === "ledger") {
